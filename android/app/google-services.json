@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "901436566591",
+    "project_id": "fir-asif-taj-tutorials",
+    "storage_bucket": "fir-asif-taj-tutorials.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901436566591:android:1cd3cbfd66c8862829dc8a",
+        "android_client_info": {
+          "package_name": "com.example.flutter_firebase_asif_taj_tutorials"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqFvHcTE_4DVLCb6UHplFKQGu2ofrM8fs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
