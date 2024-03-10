@@ -27,16 +27,15 @@ class _LoginScreenState extends State<LoginScreen> {
     getUserDetail();
   }
 
-  void getUserDetail() async{
+  void getUserDetail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final email  = prefs.getString('email');
-    final password  = prefs.getString('password');
-    if(email!=null && password != null) {
+    final email = prefs.getString('email');
+    final password = prefs.getString('password');
+    if (email != null && password != null) {
       emailController.text = email;
       passwordController.text = password;
     }
   }
-
 
   @override
   void dispose() {
@@ -61,15 +60,14 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => PostScreen()));
       setState(() {
-        loading=false;
+        loading = false;
       });
       Utils().toastMessage('User signed in successfully.');
-    })
-        .onError((error, stackTrace) {
+    }).onError((error, stackTrace) {
       debugPrint(error.toString());
       Utils().toastMessage(error.toString());
       setState(() {
-        loading=false;
+        loading = false;
       });
     });
   }
@@ -120,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 30),
+              SizedBox (height: 30),
               RoundButton(
                 title: 'Login',
                 onTap: () {
@@ -131,16 +129,17 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: 30,
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Don't have an account?"),
                   TextButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        Navigator.pop(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpScreen()),
+                              builder: (context) => PostScreen()),
                         );
                       },
                       child: Text('Sign Up')),

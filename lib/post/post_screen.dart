@@ -4,7 +4,7 @@ class PostScreen extends StatefulWidget {
   const PostScreen({super.key});
 
   @override
-  State<PostScreen> createState() => _PostScreenState();
+    State<PostScreen> createState() => _PostScreenState();
 }
 
 class _PostScreenState extends State<PostScreen> {
