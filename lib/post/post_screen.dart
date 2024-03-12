@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:js_interop';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,22 +22,20 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
   final auth = FirebaseAuth.instance;
   final ref = FirebaseDatabase.instance.ref('Post');
+  final searchFilter = TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    ref.onValue.listen((event) {
-
-
-    });
+    ref.onValue.listen((event) {});
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.blue,
         title: Center(child: Text('Post')),
         actions: [
@@ -58,6 +57,43 @@ class _PostScreenState extends State<PostScreen> {
       ),
       body: Column(
         children: [
+          SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: TextFormField(
+              controller: searchFilter,
+              decoration: InputDecoration(
+                  hintText: 'Seach', border: OutlineInputBorder()),
+              onChanged: (String value) {
+                setState(() {});
+              },
+            ),
+          ),
+          Expanded(
+            child: FirebaseAnimatedList(
+                query: ref,
+                defaultChild: Text('Loading'),
+                itemBuilder: (context, snapshot, animation, index) {
+                  final title = Text(snapshot.child('title').value.toString());
+                  if (searchFilter.text.isEmpty) {
+                    return ListTile(
+                      title: Text(snapshot.child('title').value.toString()),
+                      subtitle: Text(snapshot.child('id').value.toString()),
+                    );
+                  }else if(true){
+                    return ListTile(
+                      title: Text(snapshot.child('title').value.toString()),
+                      subtitle: Text(snapshot.child('id').value.toString()),
+                    );
+
+                  }else{
+                    return Container();
+                  }
+                }),
+          ),
+
           // Expanded(
           //   child: StreamBuilder(
           //               stream: ref.onValue,
@@ -83,23 +119,7 @@ class _PostScreenState extends State<PostScreen> {
           //               }, // stream: null, // stream error//
           //             ),
           // ),
-          Expanded(
-            child: FirebaseAnimatedList(
-                query: ref,
-                defaultChild: Text('Loading'),
-                itemBuilder: (context, snapshot, animation, index) {
-                  {
-                    var list;
-                    return ListTile(
-                     // title: Text(list[index]['title']),
-                        
-                    //  subtitle: Text(list[index]['id']),
-                       title: Text(snapshot.child('title').value.toString()),
-                      subtitle: Text(snapshot.child('id').value.toString()),
-                    );
-                  }
-                }),
-          ),
+
           // ListTile(
           //   title: Text('Hello'),
           // ),
