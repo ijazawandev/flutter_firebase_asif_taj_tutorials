@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/post/post_screen.dart';
+import 'package:flutter_firebase_asif_taj_tutorials/ui/auth/login_with_phone_number.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/ui/auth/signup_screen.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/util/utils.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/widget/round_button.dart';
@@ -51,8 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     _auth
         .signInWithEmailAndPassword(
-            email: emailController.text,
-            password: passwordController.text.toString())
+        email: emailController.text,
+        password: passwordController.text.toString())
         .then((value) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('email', emailController.text);
@@ -118,11 +119,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   return null;
                 },
               ),
-              SizedBox (height: 30),
+              SizedBox(height: 30),
               RoundButton(
                 title: 'Login',
                 onTap: () {
-                  if (_formkey.currentState!.validate()) ;
+                  if (_formkey.currentState!.validate());
                   login();
                 },
               ),
@@ -145,7 +146,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text('Sign Up')),
                 ],
               ),
+              SizedBox(height: 30,),
+              InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) =>  LoginWithPhoneNumber()));
+                },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: Colors.black),
+                  ),
+                  child: Center(
+                    child: Text('Login with phone'),
+                  ),
+                ),
+              )
             ],
+
           ),
         ),
       ),
