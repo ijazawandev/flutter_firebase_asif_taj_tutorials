@@ -27,55 +27,57 @@ class _LoginWithPhoneNumberState extends State<LoginWithPhoneNumber> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 80,
-            ),
-            TextFormField(
-              controller: phoneNumberController,
-              keyboardType: TextInputType.name,
-              decoration: InputDecoration(hintText: '+1 234 3455 234'),
-            ),
-            SizedBox(
-              height: 80,
-            ),
-            RoundButton(
-                title: 'Login',
-                loading: loading,
-                onTap: () {
-                  setState(() {
-                    loading = true;
-                  });
-                  auth.verifyPhoneNumber(
-                      phoneNumber: phoneNumberController.text,
-                      verificationCompleted: (_) {
-                        setState(() {
-                          loading = false;
+        child: Expanded(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 80,
+              ),
+              TextFormField(
+                controller: phoneNumberController,
+                keyboardType: TextInputType.name,
+                decoration: InputDecoration(hintText: '+1 234 3455 234'),
+              ),
+              SizedBox(
+                height: 80,
+              ),
+              RoundButton(
+                  title: 'Login',
+                  loading: loading,
+                  onTap: () {
+                    setState(() {
+                      loading = true;
+                    });
+                    auth.verifyPhoneNumber(
+                        phoneNumber: phoneNumberController.text,
+                        verificationCompleted: (_) {
+                          setState(() {
+                            loading = false;
+                          });
+                        },
+                        verificationFailed: (e) {
+                          Utils().toastMessage(e.toString());
+                        },
+                        codeSent: (String verificationId, int? token) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => VerifyCodeScreen(
+                                        verificationId: verificationId,
+                                      )));
+                          setState(() {
+                            loading = false;
+                          });
+                        },
+                        codeAutoRetrievalTimeout: (e) {
+                          Utils().toastMessage(e.toString());
+                          setState(() {
+                            loading = false;
+                          });
                         });
-                      },
-                      verificationFailed: (e) {
-                        Utils().toastMessage(e.toString());
-                      },
-                      codeSent: (String verificationId, int? token) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => VerifyCodeScreen(
-                                      verificationId: verificationId,
-                                    )));
-                        setState(() {
-                          loading = false;
-                        });
-                      },
-                      codeAutoRetrievalTimeout: (e) {
-                        Utils().toastMessage(e.toString());
-                        setState(() {
-                          loading = false;
-                        });
-                      });
-                }),
-          ],
+                  }),
+            ],
+          ),
         ),
       ),
     );

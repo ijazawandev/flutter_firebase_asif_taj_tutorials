@@ -1,13 +1,7 @@
-import 'dart:ffi';
-import 'dart:js_interop';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/post/add_posts.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/ui/auth/login_screen.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/util/utils.dart';
@@ -23,6 +17,7 @@ class _PostScreenState extends State<PostScreen> {
   final auth = FirebaseAuth.instance;
   final ref = FirebaseDatabase.instance.ref('Post');
   final searchFilter = TextEditingController();
+  final editController = TextEditingController();
 
   @override
   void initState() {
@@ -42,30 +37,28 @@ class _PostScreenState extends State<PostScreen> {
           IconButton(
             onPressed: () {
               auth.signOut().then((value) {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()));
               }).onError((error, stackTrace) {
                 Utils().toastMessage(error.toString());
               });
             },
             icon: Icon(Icons.logout_outlined),
           ),
-          SizedBox(
-            width: 10,
-          ),
+          SizedBox(width: 10),
         ],
       ),
       body: Column(
         children: [
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: TextFormField(
               controller: searchFilter,
               decoration: InputDecoration(
-                  hintText: 'Seach', border: OutlineInputBorder()),
+                  hintText: 'Search', border: OutlineInputBorder()),
               onChanged: (String value) {
                 setState(() {});
               },
@@ -76,19 +69,46 @@ class _PostScreenState extends State<PostScreen> {
                 query: ref,
                 defaultChild: Text('Loading'),
                 itemBuilder: (context, snapshot, animation, index) {
-                  final title = Text(snapshot.child('title').value.toString());
+                  final title = snapshot.child('title').value.toString();
+                  final id = snapshot.child('id').value.toString();
+                  debugPrint('title: $title, id: $id');
                   if (searchFilter.text.isEmpty) {
                     return ListTile(
-                      title: Text(snapshot.child('title').value.toString()),
-                      subtitle: Text(snapshot.child('id').value.toString()),
+                      title: Text(title),
+                      subtitle: Text(id),
+                      trailing: PopupMenuButton(
+                        icon: Icon(Icons.more_vert),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                              onTap: () {
+                                showMyDialog(title, id);
+                              },
+                              value: 1,
+                              child: ListTile(
+                                leading: Icon(Icons.edit),
+                                title: Text('Edit'),
+                              )),
+                          PopupMenuItem(
+                              value: 1,
+                              child: ListTile(
+                                onTap:(){
+                                  Navigator.pop(context);
+                                  ref.child(snapshot.child('id').value.toString()).remove();
+                                },
+                                leading: Icon(Icons.delete_outline),
+                                title: Text('Delete'),
+                              )),
+                        ],
+                      ),
                     );
-                  }else if(true){
+                  } else if (title
+                      .toLowerCase()
+                      .contains(searchFilter.text.toLowerCase())) {
                     return ListTile(
-                      title: Text(snapshot.child('title').value.toString()),
-                      subtitle: Text(snapshot.child('id').value.toString()),
+                      title: Text(title),
+                      subtitle: Text(id),
                     );
-
-                  }else{
+                  } else {
                     return Container();
                   }
                 }),
@@ -132,6 +152,43 @@ class _PostScreenState extends State<PostScreen> {
         },
         child: Icon(Icons.add),
       ),
+    );
+  }
+
+  Future<void> showMyDialog(String title, String id) async {
+    editController.text = title;
+    // Navigator.pop(context);
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Update'),
+          content: Container(
+            child: TextField(
+              controller: editController,
+              decoration: InputDecoration(hintText: 'Edit'),
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Cancel')),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ref.child(id).update(
+                      {'title': editController.text.toString()}).then((value) {
+                    Utils().toastMessage('Post Update');
+                  }).onError((error, stackTrace) {
+                    Utils().toastMessage(error.toString());
+                  });
+                },
+                child: Text('Update')),
+          ],
+        );
+      },
     );
   }
 }

@@ -38,7 +38,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       setState(() {
         loading = false;
       });
+    }).then((value) {
       Utils().toastMessage('User created successfully.');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
     }).onError((error, stackTrace) {
       Utils().toastMessage(error.toString());
       setState(() {
@@ -110,20 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     setState(() {
                       loading=true;
                     });
-                    auth.createUserWithEmailAndPassword(
-                            email: emailController.text.toString(),
-                            password: passwordController.text.toString())
-                        .then((value) {
-                      Utils().toastMessage('User created successfully.');
-                      setState(() {
-                        loading = false;
-                      });
-                    }).onError((error, stackTrace) {
-                      Utils().toastMessage(error.toString());
-                      setState(() {
-                        loading = false;
-                      });
-                    });
+                    signup();
                   }
                 },
               ),

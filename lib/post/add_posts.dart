@@ -11,9 +11,10 @@ class AddPostScreen extends StatefulWidget {
 }
 
 class _AddPostScreenState extends State<AddPostScreen> {
-  final postController=TextEditingController();
-  bool loading=false;
-  final databaseref=FirebaseDatabase.instance.ref('Post');
+  final postController = TextEditingController();
+  bool loading = false;
+  final databaseref = FirebaseDatabase.instance.ref('Post');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,43 +27,59 @@ class _AddPostScreenState extends State<AddPostScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
-            SizedBox(height: 30,),
+            SizedBox(
+              height: 30,
+            ),
             TextFormField(
               maxLines: 4,
               controller: postController,
               decoration: InputDecoration(
-
-                hintText: 'What is your password',
-                border: OutlineInputBorder()
-              ),
+                  hintText: 'What is your password',
+                  border: OutlineInputBorder()),
             ),
-            SizedBox(height: 30,),
-            RoundButton(title: 'Add',
+            SizedBox(
+              height: 30,
+            ),
+            RoundButton(
+                title: 'Add',
                 loading: loading,
-                onTap: (){
-              setState(() {
-                loading=true;
-              });
-              databaseref.child(DateTime.now().millisecondsSinceEpoch.toString()).set({
-                'title':postController.text.toString()
-              }).then((value){
-                Utils().toastMessage('Post Added');
-                loading=true;
-
-
-              }).onError((error, stackTrace) {
-                Utils().toastMessage(error.toString());
-                setState(() {
-                  loading=true;
-                });
-              });
-
-
-            })
-
+                onTap: () {
+                  setState(() {
+                    loading = true;
+                  });
+                  String id = DateTime.now().millisecondsSinceEpoch.toString();
+                  databaseref.child(id).set({
+                    'id': id,
+                    'title': postController.text.toString(),
+                  }).then((value) {
+                    Utils().toastMessage('Post Added');
+                    print(postController.text);
+                    loading = false;
+                    Navigator.pop(context);
+                  }).onError((error, stackTrace) {
+                    Utils().toastMessage(error.toString());
+                    setState(() {
+                      loading = true;
+                    });
+                  });
+                })
           ],
         ),
       ),
     );
+  }
+
+  Future<void> showMyDialog() async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Update'),
+            content: Container(
+              child: TextField(),
+            ),
+            actions: [],
+          );
+        });
   }
 }
