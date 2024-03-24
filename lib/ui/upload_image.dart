@@ -15,25 +15,25 @@ class UploadImageScreen extends StatefulWidget {
 }
 
 class _UploadImageScreenState extends State<UploadImageScreen> {
-  bool loading=false;
+  bool loading = false;
   File? _image;
 
   final picker = ImagePicker();
-  firebase_storage.FirebaseStorage storage =
-      firebase_storage.FirebaseStorage.instance;
-DatabaseReference databaseRef=FirebaseDatabase.instance.ref('Post');
-  
+  final storage = firebase_storage.FirebaseStorage.instance;
+  final databaseRef = FirebaseDatabase.instance.ref('Post');
 
   Future getImageGallery() async {
     final pickedFile =
         await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('no image');
-      }
-    });
+    setState(
+      () {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+        } else {
+          print('no image');
+        }
+      },
+    );
   }
 
   @override
@@ -50,9 +50,7 @@ DatabaseReference databaseRef=FirebaseDatabase.instance.ref('Post');
         children: [
           Center(
             child: InkWell(
-              onTap: () {
-                getImageGallery();
-              },
+              onTap: getImageGallery,
               child: Container(
                 height: 200,
                 width: 200,
@@ -69,44 +67,40 @@ DatabaseReference databaseRef=FirebaseDatabase.instance.ref('Post');
             height: 30,
           ),
           RoundButton(
-
               title: 'upload',
               loading: loading,
               onTap: () async {
-                  setState(() {
-                    loading=true;
-                  });
-                firebase_storage.Reference ref = firebase_storage
-                    .FirebaseStorage.instance
+                setState(() {
+                  loading = true;
+                });
+                final ref = firebase_storage.FirebaseStorage.instance
                     .ref('/foldername' + DateTime.now().millisecond.toString());
-                firebase_storage.UploadTask uploadtask =
-                    ref.putFile(_image!.absolute);
+                final uploadTask = ref.putFile(
+                  _image!.absolute,
+                  firebase_storage.SettableMetadata(contentType: 'image/jpeg'),
+                );
 
-                 Future.value(uploadtask).then((value)async{
-                  var  newUrl= await ref.getDownloadURL();
-                  databaseRef.child('i').set({
-                    'id':'2335',
-                    'title':newUrl.toString(),
-                  }).then((value){
+                Future.value(uploadTask).then((value) async {
+                  var newUrl = await ref.getDownloadURL();
+                  databaseRef.child('1').set({
+                    'id': '2335',
+                    'title': newUrl.toString(),
+                  }).then((value) {
                     setState(() {
-                      loading=false;
+                      loading = false;
                     });
-
                   }).onError((error, stackTrace) {
                     setState(() {
-                      loading=false;
+                      loading = false;
                     });
-
                   });
                   Utils().toastMessage('uploaded');
-
-                }).onError((error, stackTrace){
+                }).onError((error, stackTrace) {
                   Utils().toastMessage(error.toString());
                   setState(() {
-                    loading=false;
+                    loading = false;
                   });
                 });
-
               })
         ],
       ),
