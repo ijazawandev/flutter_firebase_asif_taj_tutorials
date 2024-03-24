@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_firebase_asif_taj_tutorials/post/post_screen.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/ui/auth/login_screen.dart';
+import 'package:flutter_firebase_asif_taj_tutorials/ui/upload_image.dart';
 
 import '../ui/auth/firestore/firestore_list_screen.dart';
 
@@ -18,7 +19,7 @@ class SplashServices {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => FireStoreScreen(),
+              builder: (context) => const UploadImageScreen(),
             ),
           );
         },

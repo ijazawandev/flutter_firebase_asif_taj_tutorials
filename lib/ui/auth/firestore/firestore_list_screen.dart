@@ -1,8 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_firebase_asif_taj_tutorials/post/add_posts.dart';
+import 'dart:async';
+
+//import 'package:flutter_firebase_asif_taj_tutorials/post/add_posts.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/ui/auth/login_screen.dart';
 import 'package:flutter_firebase_asif_taj_tutorials/util/utils.dart';
+
+import 'add_firestore_data.dart';
 
 class FireStoreScreen extends StatefulWidget {
   const FireStoreScreen({super.key});
@@ -12,6 +19,8 @@ class FireStoreScreen extends StatefulWidget {
 }
 
 class _FireStoreScreenState extends State<FireStoreScreen> {
+  final fireStore = FirebaseFirestore.instance.collection('users').snapshots();
+  final ref1 = FirebaseFirestore.instance.collection('id');
   final auth = FirebaseAuth.instance;
   final searchFilter = TextEditingController();
   final editController = TextEditingController();
@@ -20,7 +29,8 @@ class _FireStoreScreenState extends State<FireStoreScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-  //  ref.onValue.listen((event) {});
+    // ref.onValue.listen((event) {});
+    // ref.onValue.listen((event) {});
   }
 
   @override
@@ -29,7 +39,7 @@ class _FireStoreScreenState extends State<FireStoreScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.blue,
-        title: Center(child: Text('Post')),
+        title: Center(child: Text('Fire Store')),
         actions: [
           IconButton(
             onPressed: () {
@@ -50,22 +60,68 @@ class _FireStoreScreenState extends State<FireStoreScreen> {
       body: Column(
         children: [
           SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount:10,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('asd'),
+          StreamBuilder<QuerySnapshot>(
+              stream: fireStore,
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return Text('Some Error');
+                }
+                print('Length: ${snapshot.data!.docs.length}');
+                print('Data: ${snapshot.data}');
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        onTap: () {
+                        ref1.doc(snapshot.data!.docs[index]['id'].toString())
+                            .update({
+                          'title': 'Ijaz ahmad'
+                        }).then((value) {
+                          Utils().toastMessage('updated');
+                        })
+                            .onError((error, stackTrace) {
+                          Utils().toastMessage(error.toString());
+                        });
+                        // /  ref1.doc(snapshot.data!.docs[index]['id'].toString()).update({
+                        //     'title':'asif taj subscribe'
+                        //   }).then((value) {
+                        //     Utils().toastMessage('updated');
+                        //   }).onError((error, stackTrace) {
+                        //     Utils().toastMessage(error.toString());
+                        //   });
+                         },
+                        title: Text(
+                            snapshot.data!.docs[index]['title'].toString()),
+                        subtitle:
+                            Text(snapshot.data!.docs[index]['id'].toString()),
+                      );
+                    },
+                  ),
                 );
-              },
-            ),
-          ),
+              }),
+          // Expanded(
+          //   child: ListView.builder(
+          //     itemCount: 10,
+          //     itemBuilder: (context, index) {
+          //       return ListTile(
+          //         title: Text('asd'),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => AddPostScreen()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddFireStoreDataScreen()));
         },
         child: Icon(Icons.add),
       ),
@@ -95,7 +151,6 @@ class _FireStoreScreenState extends State<FireStoreScreen> {
             TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-
                 },
                 child: Text('Update')),
           ],
