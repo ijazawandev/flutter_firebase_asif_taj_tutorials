@@ -74,7 +74,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                   loading = true;
                 });
                 final ref = firebase_storage.FirebaseStorage.instance
-                    .ref('/foldername' + DateTime.now().millisecond.toString());
+                    .ref('/folderName${DateTime.now().millisecond}');
                 final uploadTask = ref.putFile(
                   _image!.absolute,
                   firebase_storage.SettableMetadata(contentType: 'image/jpeg'),
